@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '.env'))
+load_dotenv(dotenv_path)
 
 # Scrapy settings for jobs project
 #
@@ -64,9 +70,10 @@ COOKIES_ENABLED = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'jobs.pipelines.JobsPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   # 'jobs.pipelines.JobsPipeline': 300,
+   'jobs.pipelines.MongoDBPipeline': 1,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -88,3 +95,7 @@ COOKIES_ENABLED = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# Mongodb connection information
+MONGODB_URI=os.getenv('MONGODB_URI')
+MONGODB_DB=os.getenv('MONGODB_DB')
