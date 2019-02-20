@@ -9,6 +9,8 @@ class FortCollinsSpiderSpider(scrapy.Spider):
     start_urls = ['https://fcgov.csod.com/ats/careersite/search.aspx?site=1&c=fcgov']
 
     def parse(self, response):
+        employer = 'City of Fort Collins'
+
         base_url = 'https://fcgov.csod.com/ats/careersite/'
         pattern = r'JobDetails.aspx\?site\=[0-9]\&id\=[0-9][0-9][0-9][0-9]'
 
@@ -16,9 +18,12 @@ class FortCollinsSpiderSpider(scrapy.Spider):
             partial_url = re.search(pattern, list_item.css('a::attr(href)').get())
 
             yield {
+                'employer': employer,
                 'job_title': list_item.css('a::text').get(default='').strip(),
-                'pay_range': 'See Job Description: ' + base_url + partial_url.group(),
-                'department': 'See Job Description: ' + base_url + partial_url.group(),
+                'pay_range': 'See Job Description',
+                'department': 'See Job Description',
+                'is_new_job': None,
+                'description_url': base_url + partial_url.group()
             }
 
         # base_url = 'https://fcgov.csod.com/ats/careersite/'

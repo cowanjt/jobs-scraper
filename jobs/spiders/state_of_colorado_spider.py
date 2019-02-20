@@ -26,12 +26,18 @@ class StateOfColoradoSpiderSpider(scrapy.Spider):
 
 
     def parse(self, response):
+        base_url = 'https://www.governmentjobs.com'
+        employer = 'State of Colorado'
+
         def extract_with_css(job_description, query):
             return job_description.css(query).get(default='').strip()
 
         for description in response.css('div.search-results-grid-container > table > tbody tr'):
             yield {
+                'employer': employer,
                 'job_title': extract_with_css(description, 'h3 a::text'),
                 'pay_range': extract_with_css(description, 'td.job-table-salary::text'),
                 'department': 'Information Technology',
+                'is_new_job': None,
+                'description_url': base_url + extract_with_css(description, 'h3 a::attr(href)')
             }        

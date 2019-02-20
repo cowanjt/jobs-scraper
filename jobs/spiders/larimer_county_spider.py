@@ -10,6 +10,8 @@ class LarimerCountySpiderSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
+        employer = 'Larimer County'
+
         def extract_with_css(job_description, query):
             return job_description.css(query).get(default='').strip()
 
@@ -17,9 +19,12 @@ class LarimerCountySpiderSpider(scrapy.Spider):
             department = extract_with_css(description, 'div.col-xs-12.additionalFields > div > dl:nth-child(5) > dd > span::text')
             if department == 'Information Technology':
                 yield {
+                    'employer': employer,
                     'job_title': extract_with_css(description, 'div.col-xs-12.title > a > span:nth-child(2)::text'),
                     'pay_range': extract_with_css(description, 'div.col-xs-12.additionalFields > div > dl:nth-child(3) > dd > span::text'),
                     'department': extract_with_css(description, 'div.col-xs-12.additionalFields > div > dl:nth-child(5) > dd > span::text'),
+                    'is_new_job': None,
+                    'description_url': extract_with_css(description, 'div.col-xs-12.title > a::attr(href)')
                 }
 
         # Recursively navigate anything with pagination

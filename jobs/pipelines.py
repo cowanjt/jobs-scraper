@@ -36,5 +36,16 @@ class MongoDBPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert_one(dict(item))
+        # Check if description_url matches any other record in the DB
+
+        item_dict = dict(item)
+        db_record = self.db[self.collection_name].find_one({ 'description_url': item_dict['description_url'] })
+        # If there's a match, update is_new_job field to 0
+        if db_record == None:
+            item_dict['is_new_job'] = 1
+            self.db[self.collection_name].insert_one(item_dict)
+        # If there's NO match, insert the record with the is_new_job field set to 1
+        else:
+            self.db[self.collection_name].update_one({ 'description_url': item_dict['description_url'] }, {'$set': { 'is_new_job': 0 }})
+     
         return item
