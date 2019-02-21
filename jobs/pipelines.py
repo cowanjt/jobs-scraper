@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
+import os
 import pymongo
+import smtplib
 from scrapy.conf import settings
+from scrapy.mail import MailSender
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from os.path import join, dirname
+from dotenv import load_dotenv
 # from scrapy import log
 
 # Define your item pipelines here
@@ -15,6 +22,8 @@ class JobsPipeline(object):
 
 
 class MongoDBPipeline(object):
+    dotenv_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '.env'))
+    load_dotenv(dotenv_path)
     collection_name = 'OnlineJobsCollection'
 
     def __init__(self, mongo_uri, mongo_db):
@@ -33,6 +42,9 @@ class MongoDBPipeline(object):
         self.db = self.client[self.mongo_db]
 
     def close_spider(self, spider):
+        spider_name = spider.name
+        subject = "Crawl Completed for %s" % spider_name
+        self.send_mail("Crawl completed.", subject)
         self.client.close()
 
     def process_item(self, item, spider):
@@ -49,3 +61,21 @@ class MongoDBPipeline(object):
             self.db[self.collection_name].update_one({ 'description_url': item_dict['description_url'] }, {'$set': { 'is_new_job': 0 }})
      
         return item
+    
+    def send_mail(self, message, title):
+        gmailUser = os.getenv('SMTP_USER')
+        gmailPassword = os.getenv('SMTP_PASS')
+        recipient = os.getenv('MAIL_TO')
+        msg = MIMEMultipart()
+        msg['From'] = gmailUser
+        msg['To'] = recipient
+        msg['Subject'] = title
+        msg.attach(MIMEText(message))
+
+        mailServer = smtplib.SMTP('smtp.gmail.com', 587)
+        mailServer.ehlo()
+        mailServer.starttls()
+        mailServer.ehlo()
+        mailServer.login(gmailUser, gmailPassword)
+        mailServer.sendmail(gmailUser, recipient, msg.as_string())
+        mailServer.close()
