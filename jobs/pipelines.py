@@ -7,6 +7,8 @@ from scrapy.mail import MailSender
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from os.path import join, dirname
+
+# Don't use with ScrapyingHub.
 from dotenv import load_dotenv
 # from scrapy import log
 
@@ -22,8 +24,12 @@ class JobsPipeline(object):
 
 
 class MongoDBPipeline(object):
+
+    # Don't use with ScrapyingHub.
+    # Loads environment file with key value pairs
     dotenv_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '.env'))
     load_dotenv(dotenv_path)
+
     collection_name = 'OnlineJobsCollection'
 
     def __init__(self, mongo_uri, mongo_db):
