@@ -48,7 +48,7 @@ class MongoDBPipeline(object):
         self.db = self.client[self.mongo_db]
 
     def close_spider(self, spider):
-        if spider.name == 'weld_county_spider' or spider.name == 'windsor_spider':
+        if spider.name == 'weld_county_spider' or spider.name == 'windsor_spider' or spider.name == 'wellington_spider':
             return
         spider_name = spider.name
         subject = "Crawl Completed for %s" % spider_name
@@ -57,7 +57,7 @@ class MongoDBPipeline(object):
 
     def process_item(self, item, spider):
         # Check if description_url matches any other record in the DB
-        if spider.name == 'weld_county_spider' or spider.name == 'windsor_spider':
+        if spider.name == 'weld_county_spider' or spider.name == 'windsor_spider' or spider.name == 'wellington_spider':
             return item
 
         item_dict = dict(item)
