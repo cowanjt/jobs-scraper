@@ -4,6 +4,8 @@ import json
 from scrapy import Request
 
 
+# THIS IS AN SPA. It's built using React. More reseach is needed to determine what technologies are needed to
+# successfully crawl SPAs.
 class LovelandSpiderSpider(scrapy.Spider):
     name = 'loveland_spider'
     allowed_domains = ['recruiting2.ultipro.com']
@@ -44,14 +46,10 @@ class LovelandSpiderSpider(scrapy.Spider):
 
     def parse(self, response):
         base_url = 'https://recruiting2.ultipro.com/CIT1029CLO/JobBoard/1a9f4e7d-ecfd-4986-bc53-146c0831d8b3/?q=&o=postedDateDesc'
-        print(response.request.method)
-        print(response.request.headers)
-        print(response.request.body)
-        # for description in response.css('#Opportunities > div:nth-child(3) > div'):
-        for description in response.css('#Opportunities'):
-            #partial_url = description.css('a::attr(href)').get()
-            print(description)
-            #yield response.follow(base_url + partial_url, callback=self.parse_job)
+
+        for description in response.css('#Opportunities > div:nth-child(3) > div'):
+            partial_url = description.css('a::attr(href)').get()
+            yield response.follow(base_url + partial_url, callback=self.parse_job)
 
     def parse_job(self, response):
         employer = 'City of Loveland'
@@ -61,9 +59,9 @@ class LovelandSpiderSpider(scrapy.Spider):
 
         yield {
             'employer': employer,
-            'job_title': extract_with_css(''),
-            'pay_range': extract_with_css(''),
-            'department': extract_with_css(''),
+            'job_title': extract_with_css('div.row.header > div.col-md-15 > h2 > span::text'),
+            'pay_range': 'See Job Description',
+            'department': extract_with_css('div.label-with-icon-group.paragraph > span:nth-child(1) > span::text'),
             'is_new_job': None,
             'description_url': response.request.url
         }
