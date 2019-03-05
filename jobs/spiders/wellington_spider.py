@@ -32,7 +32,7 @@ class WellingtonSpiderSpider(scrapy.Spider):
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-MicrosoftAjax' : 'Delta=true',
             }
-        print(response.url)
+
         # Data we're POSTing to the server.
         form_data = {
                 '__VIEWSTATE': response.css('input#__VIEWSTATE::attr(value)').get(),
