@@ -82,6 +82,7 @@ class MongoDBPipeline(object):
         msg['Subject'] = title
         msg.attach(MIMEText(message))
 
+        # Why
         mailServer = smtplib.SMTP('smtp.gmail.com', 587)
         mailServer.ehlo()
         mailServer.starttls()
