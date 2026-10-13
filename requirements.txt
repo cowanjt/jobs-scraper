@@ -1,2 +1,2 @@
-pymongo[srv]==3.7.0
+pymongo[srv]==4.18.2
 parsel==1.5.1
